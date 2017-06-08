@@ -1,15 +1,17 @@
 var cnv;
 var srcImg;
+var tempImg;
 var defaultImg = "papi.jpg";
 var imgWidth;
 var imgHeight;
 var lastindex;
 var button;
+var sigmaSlider;
 
 
-var kernelsize = 9; 
+var kernelsize = 1; 
 var kernelwidth = Math.floor(kernelsize/2);
-var sigma = 3;
+var sigma = 20;
 var weightmatrix = [];
 
 //-------------------------------------------------------------------//
@@ -50,7 +52,6 @@ function createWM() {
 function centerCanvas() {
   var cenX = (windowWidth - cnv.width) / 2;
   var cenY = (windowHeight - cnv.height) / 2 ;
-  console.log(cenX + " " + cenY);
   cnv.position(cenX, cenY);
   button.position(cnv.x + srcImg.width + windowWidth/20, cnv.y + srcImg.height/2);
 }
@@ -58,13 +59,15 @@ function centerCanvas() {
 function gotFile(file) {
   if (file.type === 'image') {
     srcImg = loadImage(file.data);
-    imgWidth = srcImg.width;
-    imgHeight = srcImg.height;
-    lastindex = (imgWidth-1) + (imgHeight-1)*imgWidth;
     setTimeout( function () {
       if (1 == 1) {
+        tempImg = srcImg;
+        imgWidth = srcImg.width;
+        imgHeight = srcImg.height;
+        lastindex = (imgWidth-1) + (imgHeight-1)*imgWidth;
         resizeCanvas(srcImg.width, srcImg.height);
         centerCanvas();
+        performBlur();
         //save(srcImg, file.name.split(".")[0] + " blurred.jpg");
       }
     }
@@ -75,7 +78,7 @@ function gotFile(file) {
   }
 }
 
-function gaussianBlur(image) {
+function gaussianBlur() {
   var trueWidth = imgWidth - 1;
   var trueHeight = imgHeight - 1;
   for (var x = 0; x < imgWidth; x++) {
@@ -112,15 +115,43 @@ function gaussianBlur(image) {
   }
 }
 
+function performBlur() {
+  clear();
+  image(tempImg, 0, 0);
+  loadPixels();
+  gaussianBlur();
+  updatePixels();
+}
+
+function sigmaSliderHandler() {
+  sigma = sigmaSlider.value();
+  createWM();
+  performBlur();
+  console.log("sigma: " + sigma);
+}
+
+function kernelSliderHandler() {
+  kernelsize = kernelSlider.value();
+  var kernelwidth = Math.floor(kernelsize/2);
+  createWM();
+  performBlur();
+  console.log("kernel: " + kernelsize);
+}
+
 //---------------------------------------------------------------------------------------//
 
 function preload() {
   srcImg = loadImage(defaultImg);
+  tempImg = srcImg;
 }
 
 function setup () {
   cnv = createCanvas(srcImg.width, srcImg.height);
   button = createFileInput(gotFile);
+  sigmaSlider = createSlider(1, 15, 1, 0.5);
+  kernelSlider = createSlider(1, 21, 1, 2);
+  sigmaSlider.changed(sigmaSliderHandler);
+  kernelSlider.changed(kernelSliderHandler);
   centerCanvas();
 
   pixelDensity(1);
@@ -129,13 +160,15 @@ function setup () {
   lastindex = (imgWidth-1) + (imgHeight-1)*imgWidth;
   createWM();
   noLoop();
+
+  performBlur();
 }
 
 function draw() {
-  image(srcImg, 0, 0);
-  loadPixels();
-  gaussianBlur(srcImg);
-  updatePixels();
+  //image(tempImg, 0, 0);
+  //loadPixels();
+  //gaussianBlur();
+  //updatePixels();
 }
 
 function windowResized() {
