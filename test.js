@@ -5,13 +5,17 @@ var defaultImg = "papi.jpg";
 var imgWidth;
 var imgHeight;
 var lastindex;
-var button;
+var uploadButton;
 var sigmaSlider;
 var welcome;
 var sigmaText;
 var kernelText;
 var equation;
-var explanation;
+var how;
+var explanation1;
+var matrix;
+var nextButton;
+var curSlide = 0;
 
 
 var kernelsize = 1; 
@@ -55,18 +59,9 @@ function createWM() {
 }
 
 function centerCanvas() {
-  var cenX = (windowWidth - cnv.width) / 2;
+  var cenX = 155+ (windowWidth - cnv.width) / 2;
   var cenY = (windowHeight - cnv.height) / 2 ;
   cnv.position(cenX, cenY);
-  welcome.position(5, -13);
-  explanation.position(welcome.x, welcome.y+windowHeight/20);
-  equation.position(welcome.x, welcome.y+windowHeight/5);
-  button.position(welcome.x+30, 9*windowHeight/20);
-  sigmaSlider.position(20+button.x, button.y+windowHeight/20);
-  sigmaText.position(sigmaSlider.x + 50, sigmaSlider.y+windowHeight/40);
-  kernelSlider.position(sigmaSlider.x, sigmaSlider.y+windowHeight/10);
-  kernelText.position(kernelSlider.x+29, kernelSlider.y+windowHeight/40);
-  console.log(welcome.width);
 }
 
 function gotFile(file) {
@@ -151,9 +146,9 @@ function performBlur() {
 function sigmaSliderHandler() {
   sigma = sigmaSlider.value();
   sigmaText.html("σ = " + sigma);
+  //sigmaText.position(
   createWM();
   performBlur();
-  console.log("sigma: " + sigma);
 }
 
 function kernelSliderHandler() {
@@ -162,7 +157,67 @@ function kernelSliderHandler() {
   kernelwidth = Math.floor(kernelsize/2);
   createWM();
   performBlur();
-  console.log("kernel: " + kernelsize);
+}
+
+function nextHandler() {
+  if (curSlide == 0) {
+    matrix = createImg("matrix.png");
+    matrix.style("width", "250px");
+    matrix.style("height", "250px");
+    matrix.position(welcome.x+matrix.width/6, welcome.y+158.3);
+    explanation1.html("First we start with a RADIUSxRADIUS matrix. For example, the above is a matrix where the radius is equal to 3. The middle entry is the current pixel that we're looking at. We then plug each of these (x,y) values into the equation below to get a weighted matrix.");
+    explanation1.style("width", "260px");
+    explanation1.position(42.66666666, 405.3);
+    explanation1.style("text-align", "center");
+    nextButton.position(explanation1.x+(explanation1.width-nextButton.width)/2, 565);
+    nextButton.html("Next ->");
+    sigmaSlider.value(1);
+    kernelSlider.value(1);
+    sigma = sigmaSlider.value();
+    sigmaText.html("σ = " + sigma);
+    kernelSliderHandler();
+    curSlide = 1;
+  } else if (curSlide == 1) {
+    matrix.remove();
+    equation = createImg("equation.png");
+    equation.position(welcome.x, 125);
+    explanation1.html("This is the 3D version of a normalized <q>bell curve</q> that has a standard deviation of σ. First, picture a 2D bell curve. If we make it have a large standard deviation, it will become shorter but wider. The same applies for the 3D version -- the larger we make σ, the more the pixels around the center one will be weighted, giving a blurrier image. We will apply this function to the (x,y) coordinate of each entry in the matrix to get a new weighted matrix. If we pick σ = 1.5 we get the following...");
+    explanation1.position(explanation1.x, 240);
+    nextButton.position(nextButton.x, 511);
+    console.log(explanation1.y);
+    curSlide = 2;
+  } else if (curSlide == 2) {
+    equation.remove();
+    matrix = createImg("matrix2.png");
+    matrix.style("width", "250px");
+    matrix.style("height", "250px");
+    matrix.position(welcome.x+matrix.width/6, welcome.y+158.3);
+    explanation1.html("We are almost done! We must now normalize the matrix by calculating the sum of every value and then divide each entry by this sum. If we did not do this, we would get a darker image if the sum was less than 1 and a brighter image if the sum was greater than 1.");
+    explanation1.position(matrix.x-4, matrix.y + matrix.height + 10);
+    nextButton.position(nextButton.x, nextButton.y+55);
+    curSlide = 3;
+  } else if (curSlide == 3) {
+    matrix.remove();
+    matrix = createImg("matrix3.png");
+    matrix.style("width", "250px");
+    matrix.style("height", "250px");
+    matrix.position(welcome.x+matrix.width/6, welcome.y+158.3);
+    explanation1.html("Now we must weigh each pixel according to this matrix. This means the center pixel's new R value is (top-left pixel's R value)*(0.0947416) + (top-center pixel's R value)*(0.118318) + ... We do this for the G,B, and A values of each pixel as well.");
+    explanation1.position(matrix.x-4, matrix.y + matrix.height + 10);
+    curSlide = 4;
+  } else if (curSlide == 4) {
+    matrix.remove();
+    explanation1.html("We're done! Each pixel is averaged according to the pixels around it, producing a Gaussian blur. As you can see, σ = 1.5 and a radius size of 3 does not produce a very intense blur. Try changing the σ and Radius values to get a blurrier image! <font color=red>Radius values over ~31 (~2/3 of the slider) will take a little while!</font> You can also upload your own picture and blur it by hitting the <q>Choose File</q> button!");
+    explanation1.position(explanation1.x, how.y+how.height+40);
+    nextButton.html("Beginning ->");
+    nextButton.position(nextButton.x-10, explanation1.y+explanation1.height+218);
+    sigmaSlider.value(1.5);
+    kernelSlider.value(3);
+    sigma = sigmaSlider.value();
+    sigmaText.html("σ = " + sigma);
+    kernelSliderHandler();
+    curSlide = 0;
+  }
 }
 
 //---------------------------------------------------------------------------------------//
@@ -170,22 +225,41 @@ function kernelSliderHandler() {
 function preload() {
   srcImg = loadImage(defaultImg);
   tempImg = srcImg;
-  equation = createImg("equation.png");
 }
 
 function setup () {
   welcome = createP("Gaussian Blur Tool by Alex Hutman");
-  explanation = createP("How does this work?");
-  cnv = createCanvas(srcImg.width, srcImg.height);
-  button = createFileInput(gotFile);
+  explanation1 = createP();
+  how = createElement("h1", "How does this work?");
+  uploadButton = createFileInput(gotFile);
+  nextButton = createButton("Next ->");
+  nextButton.mouseClicked(nextHandler);
   sigmaSlider = createSlider(1, 15, 1, 0.5);
   sigmaText = createP("σ = " + sigmaSlider.value());
   kernelSlider = createSlider(1, 51, 1, 2);
   kernelText = createP("Radius = " + kernelSlider.value());
   welcome.style("padding", "10px");
-  explanation.style("padding", "10px");
+  how.style("padding", "10px");
+  sigmaText.style("width", "75px");
+  kernelText.style("width", "80px");
+  sigmaText.style("height", "10px");
+  kernelText.style("height", "10px");
   sigmaSlider.changed(sigmaSliderHandler);
   kernelSlider.changed(kernelSliderHandler);
+
+  welcome.position(5, -13);
+  how.position(welcome.x+18, welcome.y+47.5);
+  nextHandler();
+  sigmaText.style("text-align", "center");
+  kernelText.style("text-align", "center");
+
+  kernelText.position(137, 902.5);
+  kernelSlider.position(kernelText.x-29, kernelText.y-27);
+  sigmaText.position(kernelSlider.x+(kernelSlider.width-sigmaText.width)/2, kernelText.y-105.5);
+  sigmaSlider.position(kernelSlider.x, kernelSlider.y-105.5);
+  uploadButton.position(sigmaSlider.x-20, sigmaSlider.y-70);
+
+  cnv = createCanvas(srcImg.width, srcImg.height);
   centerCanvas();
 
   pixelDensity(1);
