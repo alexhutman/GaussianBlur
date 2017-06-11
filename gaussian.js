@@ -165,7 +165,7 @@ function nextHandler() {
     matrix.style("width", "250px");
     matrix.style("height", "250px");
     matrix.position(welcome.x+matrix.width/6, welcome.y+158.3);
-    explanation1.html("First we start with a RADIUSxRADIUS matrix. For example, the above is a matrix where the radius is equal to 3. The middle entry is the current pixel that we're looking at. We then plug each of these (x,y) values into the equation below to get a weighted matrix.");
+    explanation1.html("First we start with a RADIUSxRADIUS matrix. For example, the above is a matrix where the radius is equal to 3. The middle entry is the current pixel that we're looking at. We then plug each of these (x,y) values into the following equation to get a weighted matrix:");
     explanation1.style("width", "260px");
     explanation1.position(42.66666666, 405.3);
     explanation1.style("text-align", "center");
