@@ -94,7 +94,7 @@ function gaussianBlur() {
       var sumR = 0;
       var sumG = 0;
       var sumB = 0;
-      var sumA = 0;
+      //var sumA = 0;
 
       for (var i = 0; i < kernelsize; i++) {
         for (var j = 0; j < kernelsize; j++) {
@@ -124,13 +124,13 @@ function gaussianBlur() {
           sumR += matrixVal*pixels[curColor];
           sumG += matrixVal*pixels[curColor+1];
           sumB += matrixVal*pixels[curColor+2];
-          sumA += matrixVal*pixels[curColor+3];
+          //sumA += matrixVal*pixels[curColor+3];
         }
       }
       pixels[loc] = sumR;
       pixels[loc+1] = sumG;
       pixels[loc+2] = sumB;
-      pixels[loc+3] = sumA;
+      //pixels[loc+3] = sumA;
     }
   }
 }
