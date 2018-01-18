@@ -1,7 +1,7 @@
 var cnv;
 var srcImg;
 var tempImg;
-var defaultImg = "papi.jpg";
+var defaultImg = "/assets/papi.jpg";
 var imgWidth;
 var imgHeight;
 var lastindex;
@@ -161,7 +161,7 @@ function kernelSliderHandler() {
 
 function nextHandler() {
   if (curSlide == 0) {
-    matrix = createImg("matrix.png");
+    matrix = createImg("/assets/matrix.png");
     matrix.style("width", "250px");
     matrix.style("height", "250px");
     matrix.position(welcome.x+matrix.width/6, welcome.y+158.3);
@@ -179,7 +179,7 @@ function nextHandler() {
     curSlide = 1;
   } else if (curSlide == 1) {
     matrix.remove();
-    equation = createImg("equation.png");
+    equation = createImg("/assets/equation.png");
     equation.position(welcome.x, 125);
     explanation1.html("This is the 3D version of a normalized <q>bell curve</q> that has a standard deviation of σ. First, picture a 2D bell curve. If we make it have a large standard deviation, it will become shorter but wider. The same applies for the 3D version -- the larger we make σ, the more the pixels around the center one will be weighted, giving a blurrier image. We will apply this function to the (x,y) coordinate of each entry in the matrix to get a new weighted matrix. If we pick σ = 1.5 we get the following...");
     explanation1.position(explanation1.x, 240);
@@ -188,7 +188,7 @@ function nextHandler() {
     curSlide = 2;
   } else if (curSlide == 2) {
     equation.remove();
-    matrix = createImg("matrix2.png");
+    matrix = createImg("/assets/matrix2.png");
     matrix.style("width", "250px");
     matrix.style("height", "250px");
     matrix.position(welcome.x+matrix.width/6, welcome.y+158.3);
@@ -198,7 +198,7 @@ function nextHandler() {
     curSlide = 3;
   } else if (curSlide == 3) {
     matrix.remove();
-    matrix = createImg("matrix3.png");
+    matrix = createImg("/assets/matrix3.png");
     matrix.style("width", "250px");
     matrix.style("height", "250px");
     matrix.position(welcome.x+matrix.width/6, welcome.y+158.3);
