@@ -1,6 +1,5 @@
 var cnv;
 var srcImg;
-var tempImg;
 var defaultImg = "assets/papi.jpg";
 var imgWidth;
 var imgHeight;
@@ -69,26 +68,28 @@ function gotFile(file) {
     srcImg = loadImage(file.data);
     setTimeout( function () {
       if (1 == 1) {
-        tempImg = srcImg;
         imgWidth = srcImg.width;
         imgHeight = srcImg.height;
         lastindex = (imgWidth-1) + (imgHeight-1)*imgWidth;
-        resizeCanvas(srcImg.width, srcImg.height);
+        resizeCanvas(imgWidth, imgHeight);
         centerCanvas();
-        performBlur();
+        clear();
+        image(srcImg, 0, 0);
+        gaussianBlur();
       }
     }
     , 
-      55);
+      100);
   } else {
     createP("Please enter a valid image!");
   }
 }
 
 function gaussianBlur() {
+  loadPixels();
   var trueWidth = imgWidth - 1;
   var trueHeight = imgHeight - 1;
-  for (var x = 0; x < imgHeight; x++) {
+  for (var x = 0; x < imgWidth; x++) {
     for (var y = 0; y < imgHeight; y++) {
       var loc = 4 * (y * imgWidth + x);
       var sumR = 0;
@@ -102,25 +103,22 @@ function gaussianBlur() {
           var curY = y-kernelwidth+i;
           var offscreenXneg = curX < 0;
           var offscreenXpos = curX > trueWidth;
-          var offscreenYneg = curY <0;
+          var offscreenYneg = curY < 0;
           var offscreenYpos = curY > trueHeight;
-          var matrixVal = weightmatrix[i][j];
-          var curColor;
-          if (offscreenXneg || offscreenXpos || offscreenYneg || offscreenYpos) {
-            if (offscreenXneg) {
-              curX = 0;
-            } 
-            if (offscreenXpos) {
-              curX = trueWidth;
-            }
-            if (offscreenYneg) {
-              curY = 0;
-            }
-            if (offscreenYpos) {
-              curY = trueHeight;
-            }
+          if (offscreenXneg) {
+            curX = 0;
+          } 
+          if (offscreenXpos) {
+            curX = trueWidth;
           }
-          curColor = 4 * (imgWidth*(curY) + curX);
+          if (offscreenYneg) {
+            curY = 0;
+          }
+          if (offscreenYpos) {
+            curY = trueHeight;
+          }
+          var matrixVal = weightmatrix[i][j];
+          var curColor = 4 * (imgWidth*(curY) + curX);
           sumR += matrixVal*pixels[curColor];
           sumG += matrixVal*pixels[curColor+1];
           sumB += matrixVal*pixels[curColor+2];
@@ -133,13 +131,6 @@ function gaussianBlur() {
       //pixels[loc+3] = sumA;
     }
   }
-}
-
-function performBlur() {
-  clear();
-  image(tempImg, 0, 0);
-  loadPixels();
-  gaussianBlur();
   updatePixels();
 }
 
@@ -148,7 +139,9 @@ function sigmaSliderHandler() {
   sigmaText.html("σ = " + sigma);
   //sigmaText.position(
   createWM();
-  performBlur();
+  clear();
+  image(srcImg, 0, 0);
+  gaussianBlur();
 }
 
 function kernelSliderHandler() {
@@ -156,7 +149,9 @@ function kernelSliderHandler() {
   kernelText.html("Radius = " + kernelsize);
   kernelwidth = Math.floor(kernelsize/2);
   createWM();
-  performBlur();
+  clear();
+  image(srcImg, 0, 0);
+  gaussianBlur();
 }
 
 function nextHandler() {
@@ -184,7 +179,6 @@ function nextHandler() {
     explanation1.html("This is the 3D version of a normalized <q>bell curve</q> that has a standard deviation of σ. First, picture a 2D bell curve. If we make it have a large standard deviation, it will become shorter but wider. The same applies for the 3D version -- the larger we make σ, the more the pixels around the center one will be weighted, giving a blurrier image. We will apply this function to the (x,y) coordinate of each entry in the matrix to get a new weighted matrix. If we pick σ = 1.5 we get the following...");
     explanation1.position(explanation1.x, 240);
     nextButton.position(nextButton.x, 511);
-    console.log(explanation1.y);
     curSlide = 2;
   } else if (curSlide == 2) {
     equation.remove();
@@ -224,7 +218,6 @@ function nextHandler() {
 
 function preload() {
   srcImg = loadImage(defaultImg);
-  tempImg = srcImg;
 }
 
 function setup () {
@@ -269,7 +262,9 @@ function setup () {
   createWM();
   noLoop();
 
-  performBlur();
+  clear();
+  image(srcImg, 0, 0);
+  gaussianBlur();
 }
 
 function draw() {
