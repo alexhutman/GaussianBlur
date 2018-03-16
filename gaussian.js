@@ -14,7 +14,6 @@ var kernelText;
 
 var curSlide = 0;
 
-
 var kernelsize;
 var kernelwidth;
 var sigma = 1;
@@ -153,7 +152,6 @@ function kernelSliderHandler() {
 function nextHandler() {
   if (curSlide == 0) {
     explImg.elt.src = "assets/matrix.png";
-    explImg.style("visibility", "visible");
     explanation.html("First we start with a RADIUSxRADIUS matrix. For example, the above is a matrix where the radius is equal to 3. The middle entry is the current pixel that we're looking at. We then plug each of these (x,y) values into the following equation to get a weighted matrix:")
     nextButton.html("Next ->");
     nextButton.style('margin', '5px 33%');
@@ -178,7 +176,6 @@ function nextHandler() {
     explanation.html("Now we must weigh each pixel according to this matrix. This means the center pixel's new R value is (top-left pixel's R value)*(0.0947416) + (top-center pixel's R value)*(0.118318) + ... We do this for the G,B, and A values of each pixel as well.");
     curSlide = 4;
   } else if (curSlide == 4) {
-    explImg.style("visibility", "hidden");
     explanation.html("We're done! Each pixel is averaged according to the pixels around it, producing a Gaussian blur. As you can see, σ = 1.5 and a radius size of 3 does not produce a very intense blur. Try changing the σ and Radius values to get a blurrier image! <font color=red>Radius values over ~31 (~2/3 of the slider) will take a little while!</font> You can also upload your own picture and blur it by hitting the <q>Choose File</q> button!");
     nextButton.html("Beginning ->");
     nextButton.style('margin', '5px 30%');
@@ -192,6 +189,14 @@ function nextHandler() {
 }
 
 //---------------------------------------------------------------------------------------//
+
+function turnRed() {
+  this.class("sliderClicked");
+}
+
+function turnBlack() {
+  this.class("slider");
+}
 
 function preload() {
   srcImg = loadImage(defaultImg);
@@ -207,15 +212,23 @@ function setup () {
   kernelText = createP("Radius = 1");
   kernelSlider = createSlider(1, 51, 1, 2);
 
+
   nextButton.style('margin', '5px 33%');
+  nextButton.style('padding', '10px 15px');
   nextButton.style('white-space', 'nowrap');
   nextButton.style('text align', 'center');
+  nextButton.class('button');
 
   nextButton.mouseClicked(nextHandler);
+  sigmaSlider.mousePressed(turnRed);
+  sigmaSlider.mouseReleased(turnBlack);
+  kernelSlider.mousePressed(turnRed);
+  kernelSlider.mouseReleased(turnBlack);
 
   uploadButton.style('margin-left', '15%');
   uploadButton.style('margin-right', '15%');
   uploadButton.style('border', '3px #615f5e dotted');
+  uploadButton.class('button');
   uploadButton.parent('#upload');
 
 
@@ -223,12 +236,12 @@ function setup () {
   sigmaSlider.parent('#sigma');
   sigmaText.style("text-align", "center");
   sigmaText.style("width", "100%");
-  sigmaSlider.style("width", "100%");
+  sigmaSlider.class('slider');
 
   kernelText.parent('#kernel');
   kernelSlider.parent('#kernel');
   kernelText.style("text-align", "center");
-  kernelSlider.style("width", "100%");
+  kernelSlider.class('slider');
 
   cnv = createCanvas(srcImg.width, srcImg.height);
   cnv.parent('#canvasCol');

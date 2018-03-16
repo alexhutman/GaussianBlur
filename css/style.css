@@ -61,8 +61,63 @@ body {
   margin-top: 50px;
 }
 
-.sliders {
-  margin: 25px 30%;
+.sliderContainer {
+  margin: 25px 20%;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.sliderContainer:hover {
+  opacity: 1;
+}
+
+.slider{
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  height: 7px;
+  border-radius: 5px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #333;
+}
+
+.slider::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.sliderClicked{
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  height: 7px;
+  border-radius: 5px;
+}
+
+.sliderClicked::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: red;
+}
+
+.sliderClicked::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
 }
 
 .leftCol {
@@ -76,4 +131,19 @@ body {
 .leftCol p {
   font-family: 'Free-Serif', Helvetica, sans-serif;
   font-size: 17px;
+}
+
+.button {
+  background-color: #333;
+  color: #fff;
+  border: none;
+}
+
+.button:hover {
+  background: red;
+  color: #fff;
+}
+
+.button:active {
+  opacity: 0.5;
 }
