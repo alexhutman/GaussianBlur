@@ -12,6 +12,10 @@
   font-style:normal;
 }
 
+*:focus {
+  outline: none;
+}
+
 html {
   width: 100%;
   height: 100%;
