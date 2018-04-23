@@ -54,15 +54,17 @@ body {
 }
 
 #tutImg {
-  width: 250px;
-  height: 250px;
+  width: 73%;
+  height: auto;
   padding: 15px;
 }
 
 #tutPar {
   text-align:center;
-  width: 280px;
-  padding: 4% 8%;
+  margin-left: 0px;
+  margin-right:0px;
+  width: 100%;
+  padding: 0px 0px;
 }
 
 #userInput{

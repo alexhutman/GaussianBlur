@@ -227,6 +227,7 @@ function setup () {
 
   uploadButton.style('margin-left', '15%');
   uploadButton.style('margin-right', '15%');
+  uploadButton.style('width', '70%');
   uploadButton.style('border', '3px #615f5e dotted');
   uploadButton.class('button');
   uploadButton.parent('#upload');
