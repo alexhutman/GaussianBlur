@@ -17,7 +17,7 @@ var curSlide = 0;
 var kernelsize;
 var kernelwidth;
 var sigma = 1;
-var weightmatrix = [];
+var weightVector = [];
 
 //-------------------------------------------------------------------//
 
@@ -33,24 +33,14 @@ function blur(x_, y_) {
 
 function createWM() {
   var sum = 0;
+
   for (var i = 0; i < kernelsize; i++) {
-    weightmatrix[i] = [];
-    for (var j = 0; j <= i; j++) {
-      var val = blur(j - kernelwidth, kernelwidth - i);
-      if (i !== j) {
-        weightmatrix[i][j] = val;
-        weightmatrix[j][i] = val;
-        sum += 2*val;
-      } else {
-        weightmatrix[i][j] = val;
-        sum += val;
-      }
-    }
+    var val = blur(i - kernelwidth, 0);
+    weightVector[i] = val;
+    sum += val;
   }
   for (var i = 0; i < kernelsize; i++) {
-    for (var j = 0; j < kernelsize; j++) {
-      weightmatrix[i][j] /= sum;
-    }
+    weightVector[i] /= sum;
   }
 }
 
@@ -79,45 +69,73 @@ function gotFile(file) {
 function gaussianBlur() {
   var imgWidth = srcImg.width;
   var imgHeight = srcImg.height;
-  loadPixels();
-
   var trueWidth = imgWidth - 1;
   var trueHeight = imgHeight - 1;
-  for (var x = 0; x < imgWidth; x++) {
-    for (var y = 0; y < imgHeight; y++) {
+  loadPixels();
+
+  //Horizontal pass
+  for (var y = 0; y < imgHeight; y++) {
+    for (var x = 0; x < imgWidth; x++) {
+      var xBasis = x-kernelwidth;
       var loc = 4 * (y * imgWidth + x);
       var sumR = 0;
       var sumG = 0;
       var sumB = 0;
       //var sumA = 0;
 
-      for (var i = 0; i < kernelsize; i++) {
-        for (var j = 0; j < kernelsize; j++) {
-          var curX = x-kernelwidth+j;
-          var curY = y-kernelwidth+i;
-          var offscreenXneg = curX < 0;
-          var offscreenXpos = curX > trueWidth;
-          var offscreenYneg = curY < 0;
-          var offscreenYpos = curY > trueHeight;
-          if (offscreenXneg) {
-            curX = 0;
-          }
-          if (offscreenXpos) {
-            curX = trueWidth;
-          }
-          if (offscreenYneg) {
-            curY = 0;
-          }
-          if (offscreenYpos) {
-            curY = trueHeight;
-          }
-          var matrixVal = weightmatrix[i][j];
-          var curColor = 4 * (imgWidth*(curY) + curX);
-          sumR += matrixVal*pixels[curColor];
-          sumG += matrixVal*pixels[curColor+1];
-          sumB += matrixVal*pixels[curColor+2];
-          //sumA += matrixVal*pixels[curColor+3];
+      for (var xOffset = 0; xOffset < kernelsize; xOffset++) {
+        var curX = xBasis + xOffset;
+        var offscreenXneg = curX < 0;
+        var offscreenXpos = curX > trueWidth;
+        if (offscreenXneg) {
+          curX = 0;
         }
+        if (offscreenXpos) {
+          curX = trueWidth;
+        }
+
+        var matrixVal = weightVector[xOffset];
+        var curColor = 4 * (y * imgWidth + curX);
+        sumR += matrixVal*pixels[curColor];
+        sumG += matrixVal*pixels[curColor+1];
+        sumB += matrixVal*pixels[curColor+2];
+        //sumA += matrixVal*pixels[curColor+3];
+      }
+      pixels[loc] = sumR;
+      pixels[loc+1] = sumG;
+      pixels[loc+2] = sumB;
+      //pixels[loc+3] = sumA;
+    }
+  }
+
+  //Vertical pass
+  for (var x = 0; x < imgWidth; x++) {
+    for (var y = 0; y < imgHeight; y++) {
+      var yBasis = y-kernelwidth;
+      var loc = 4 * (y * imgWidth + x);
+      var sumR = 0;
+      var sumG = 0;
+      var sumB = 0;
+      //var sumA = 0;
+
+      for (var yOffset = 0; yOffset < kernelsize; yOffset++) {
+        var curY = yBasis + yOffset;
+        var offscreenYneg = curY < 0;
+        var offscreenYpos = curY > trueHeight;
+        if (offscreenYneg) {
+          curY = 0;
+        }
+        if (offscreenYpos) {
+          curY = trueHeight;
+        }
+
+        var matrixVal = weightVector[yOffset];
+        var curColor = 4 * (curY * imgWidth + x);
+        //console.log(curColor);
+        sumR += matrixVal*pixels[curColor];
+        sumG += matrixVal*pixels[curColor+1];
+        sumB += matrixVal*pixels[curColor+2];
+        //sumA += matrixVal*pixels[curColor+3];
       }
       pixels[loc] = sumR;
       pixels[loc+1] = sumG;
