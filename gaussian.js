@@ -194,7 +194,7 @@ function nextHandler() {
     explanation.html("Now we must weigh each pixel according to this matrix. This means the center pixel's new R value is (top-left pixel's R value)*(0.0947416) + (top-center pixel's R value)*(0.118318) + ... We do this for the G,B, and A values of each pixel as well.");
     curSlide = 4;
   } else if (curSlide == 4) {
-    explanation.html("We're done! Each pixel is averaged according to the pixels around it, producing a Gaussian blur. As you can see, σ = 1.5 and a radius size of 3 does not produce a very intense blur. Try changing the σ and Radius values to get a blurrier image! <font color=red>Radius values over ~31 (~2/3 of the slider) will take a little while!</font> You can also upload your own picture and blur it by hitting the <q>Choose File</q> button!");
+    explanation.html("We're done! Each pixel is averaged according to the pixels around it, producing a Gaussian blur. As you can see, σ = 1.5 and a radius size of 3 does not produce a very intense blur. Try changing the σ and Radius values to get a blurrier image! You can also upload your own picture and blur it by hitting the <q>Choose File</q> button!");
     nextButton.html("Beginning ->");
     nextButton.style('margin', '5px 30%');
     sigmaSlider.value(1.5);
